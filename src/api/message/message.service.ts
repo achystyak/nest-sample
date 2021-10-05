@@ -39,14 +39,14 @@ export class MessageService {
       if (!rooms.some(room => room.id == input.room)) {
         throw new BadRequestException("Incorrect Room");
       }
-      if (!input.title?.length) {
+      if (!input.text?.length) {
         throw new BadRequestException("Incorrect input");
       }
     }
 
     for (const input of data) {
       const room = await this.roomService.findOne(input.room);
-      const message = new Message({ text: input.title, user, room })
+      const message = new Message({ text: input.text, user, room })
       const entity = await this.messageRepository.save(message)
       if (entity) {
         messages.push(entity);

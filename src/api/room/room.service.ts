@@ -22,14 +22,6 @@ export class RoomService {
   }
 
   async findOne(id: string) {
-    return `This action returns a #${id} room`;
-  }
-
-  async update(id: string, input: UpdateRoomDto) {
-    return `This action updates a #${id} room`;
-  }
-
-  async remove(id: string) {
-    return `This action removes a #${id} room`;
+    return await this.roomRepository.findOne(id)
   }
 }

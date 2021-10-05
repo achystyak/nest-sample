@@ -1,10 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from './entities/user.entity';
-import { RestSession } from 'src/common/common.decorators';
 
 @Controller('users')
 export class UserController {
@@ -16,29 +13,9 @@ export class UserController {
     return await this.userService.create(body);
   }
 
-  @Get()
-  @UseGuards(AuthGuard('jwt'))
-  async findAll(
-    @RestSession() session: User
-  ) {
-    return await this.userService.findAll();
-  }
-
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   async findOne(@Param('id') id: string) {
     return await this.userService.findOne(id);
-  }
-
-  @Patch(':id')
-  @UseGuards(AuthGuard('jwt'))
-  async update(@Param('id') id: string, @Body() body: UpdateUserDto) {
-    return await this.userService.update(id, body);
-  }
-
-  @Delete(':id')
-  @UseGuards(AuthGuard('jwt'))
-  async remove(@Param('id') id: string) {
-    return await this.userService.remove(id);
   }
 }

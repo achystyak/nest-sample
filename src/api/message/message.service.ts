@@ -21,20 +21,4 @@ export class MessageService {
   async create(session: User, input: CreateMessageDto) {
     return 'This action adds a new message';
   }
-
-  async findAll() {
-    return `This action returns all message`;
-  }
-
-  async findOne(id: string) {
-    return `This action returns a #${id} message`;
-  }
-
-  async update(id: string, input: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
-  }
-
-  async remove(id: string) {
-    return `This action removes a #${id} message`;
-  }
 }

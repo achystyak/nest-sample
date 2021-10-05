@@ -6,7 +6,6 @@ import { RoomService } from '../room/room.service';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
 import { Message } from './entities/message.entity';
 
 @Injectable()
@@ -19,9 +18,11 @@ export class MessageService {
   ) { }
 
   async findByRoom(roomId: string): Promise<Message[]> {
-    return this.messageRepository
+    return await this.messageRepository
       .createQueryBuilder('message')
       .leftJoin('message.room', 'room')
+      .leftJoin('message.user', 'user')
+      .select(['message', 'user'])
       .andWhere('room.id = :id', { id: roomId })
       .orderBy('message.createdAt', 'DESC')
       .skip(0).limit(300).getMany();

@@ -26,12 +26,4 @@ export class UserController {
   async currentUser(@RestSession() session: User) {
     return await this.userService.findOne(session.id);
   }
-
-  @Get('/rooms')
-  @UseGuards(AuthGuard('jwt'))
-  async rooms(
-    @RestSession() session: User
-    ) {
-    return await this.userService.rooms(session);
-  }
 }

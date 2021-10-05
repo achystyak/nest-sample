@@ -22,6 +22,14 @@ export class RoomController {
     return this.roomService.create(session, input);
   }
 
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  async rooms(
+    @RestSession() session: User
+  ) {
+    return await this.roomService.findByUser(session.id);
+  }
+
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   findOne(@Param('id') id: string) {

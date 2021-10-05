@@ -17,14 +17,23 @@ export class RoomController {
   @UseGuards(AuthGuard('jwt'))
   create(
     @RestSession() session: User,
-    @Body() createRoomDto: CreateRoomDto
+    @Body() input: CreateRoomDto
   ) {
-    return this.roomService.create(session, createRoomDto);
+    return this.roomService.create(session, input);
   }
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   findOne(@Param('id') id: string) {
     return this.roomService.findOne(id);
+  }
+
+  @Get(':id/messages')
+  @UseGuards(AuthGuard('jwt'))
+  messages(
+    @RestSession() session: User,
+    @Param('id') id: string
+  ) {
+    return this.roomService.messages(session, id);
   }
 }

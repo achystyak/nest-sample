@@ -29,6 +29,6 @@ export class Message {
     @ManyToOne(() => User, { nullable: true })
     user: User;
 
-    @OneToMany(() => Room, room => room.messages, { nullable: true })
+    @ManyToOne(() => Room, room => room.messages, { nullable: true })
     room: Room;
 }

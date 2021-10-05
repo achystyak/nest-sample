@@ -36,4 +36,12 @@ export class Room {
     @JoinTable()
     users: User[];
 
+    public static create(author: User, title: string, users: User[]) {
+        return new Room({
+            title,
+            author,
+            users
+        })
+    }
+
 }

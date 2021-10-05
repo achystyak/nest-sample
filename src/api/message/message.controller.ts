@@ -14,7 +14,7 @@ export class MessageController {
   @UseGuards(AuthGuard('jwt'))
   async create(
     @RestSession() session: User,
-    @Body() input: CreateMessageDto) {
+    @Body() input: CreateMessageDto[]) {
     return this.messageService.create(session, input);
   }
 }

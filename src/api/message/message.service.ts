@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Room } from '../room/entities/room.entity';
@@ -18,7 +18,40 @@ export class MessageService {
     @Inject(forwardRef(() => RoomService)) private readonly roomService: RoomService,
   ) { }
 
-  async create(session: User, input: CreateMessageDto) {
-    return 'This action adds a new message';
+  async findByRoom(roomId: string): Promise<Message[]> {
+    return this.messageRepository
+      .createQueryBuilder('message')
+      .leftJoin('message.room', 'room')
+      .andWhere('room.id = :id', { id: roomId })
+      .orderBy('message.createdAt', 'DESC')
+      .skip(0).limit(300).getMany();
+  }
+
+  async create(session: User, data: CreateMessageDto[]): Promise<Message[]> {
+    const user = await this.usersService.findOne(session.id);
+    if (!user) {
+      throw new BadRequestException("Incorrect user");
+    }
+    const rooms = await this.roomService.findByUser(user.id);
+    const messages = [];
+
+    for (const input of data) {
+      if (!rooms.some(room => room.id == input.room)) {
+        throw new BadRequestException("Incorrect Room");
+      }
+      if (!input.title?.length) {
+        throw new BadRequestException("Incorrect input");
+      }
+    }
+
+    for (const input of data) {
+      const room = await this.roomService.findOne(input.room);
+      const message = new Message({ text: input.title, user, room })
+      const entity = await this.messageRepository.save(message)
+      if (entity) {
+        messages.push(entity);
+      }
+    }
+    return messages;
   }
 }

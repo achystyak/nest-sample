@@ -1,6 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { MessageService } from '../message/message.service';
+import { Room } from '../room/entities/room.entity';
+import { RoomService } from '../room/room.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -9,12 +12,10 @@ import { User } from './entities/user.entity';
 export class UserService {
 
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>
+    @InjectRepository(User) private usersRepository: Repository<User>,
+    @Inject(forwardRef(() => MessageService)) private readonly messageService: MessageService,
+    @Inject(forwardRef(() => RoomService)) private readonly roomService: RoomService,
   ) { }
-
-  async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
-  }
 
   async findOne(id: string): Promise<User> {
     return await this.usersRepository.findOne(id);
@@ -22,6 +23,10 @@ export class UserService {
 
   async findByCreds(email: string, password: string): Promise<User> {
     return await this.usersRepository.findOne({ email, password });
+  }
+
+  async rooms(session: User): Promise<Room[]> {
+    return await this.roomService.findByUser(session.id);
   }
 
   async create(input: CreateUserDto): Promise<User> {

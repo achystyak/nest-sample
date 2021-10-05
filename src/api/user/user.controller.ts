@@ -3,6 +3,8 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from './entities/user.entity';
+import { RestSession } from 'src/common/common.decorators';
 
 @Controller('users')
 export class UserController {
@@ -16,7 +18,9 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findAll() {
+  async findAll(
+    @RestSession() session: User
+  ) {
     return await this.userService.findAll();
   }
 

@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Message } from 'src/api/message/entities/message.entity';
+import { Room } from 'src/api/room/entities/room.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToMany } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
@@ -13,13 +15,13 @@ export class User {
     id?: string;
 
     @CreateDateColumn()
-    creationDate?: Date
+    createdAt?: Date
 
     @UpdateDateColumn()
-    modificationDate?: Date
+    updatedAt?: Date
 
     @DeleteDateColumn()
-    deleteDate?: Date
+    deletedAt?: Date
 
     @Column()
     email: string;
@@ -29,6 +31,9 @@ export class User {
 
     @Column({ default: true })
     isActive: boolean;
+
+    @ManyToMany(() => Room, room => room.users, { nullable: true })
+    rooms?: Room[];
 
     public static create(dto: CreateUserDto) {
         return dto.email?.length && dto.password?.length

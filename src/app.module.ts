@@ -6,6 +6,10 @@ import * as fs from 'fs'
 import { AuthModule } from './auth/auth.module';
 import { SessionModule } from './api/session/session.module';
 import { UserSession } from './api/session/entities/session.entity';
+import { RoomModule } from './api/room/room.module';
+import { MessageModule } from './api/message/message.module';
+import { Message } from './api/message/entities/message.entity';
+import { Room } from './api/room/entities/room.entity';
 
 @Module({
   imports: [
@@ -15,14 +19,16 @@ import { UserSession } from './api/session/entities/session.entity';
         return {
           type: 'sqlite',
           database: env.db_path,
-          entities: [User, UserSession],
-          synchronize: env.db_sync,
+          entities: [User, UserSession, Message, Room],
+          synchronize: true,
         };
       }
     }),
     AuthModule,
     SessionModule,
-    UserModule
+    UserModule,
+    RoomModule,
+    MessageModule
   ],
 })
 export class AppModule { }

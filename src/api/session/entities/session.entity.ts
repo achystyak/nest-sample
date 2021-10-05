@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity'
 
 @Entity('sessions')
@@ -14,13 +14,13 @@ export class UserSession {
     // Common Props
 
     @CreateDateColumn()
-    creationDate?: Date
+    createdAt?: Date
 
     @UpdateDateColumn()
-    modificationDate?: Date
+    updatedAt?: Date
 
     @DeleteDateColumn()
-    deleteDate?: Date
+    deletedAt?: Date
 
     // Payload
 
@@ -32,7 +32,6 @@ export class UserSession {
 
     // Relations
 
-    @OneToOne(() => User)
-    @JoinColumn()
+    @ManyToOne(() => User)
     user?: User;
 }

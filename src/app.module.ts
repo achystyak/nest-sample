@@ -17,10 +17,14 @@ import { Room } from './api/room/entities/room.entity';
       useFactory: () => {
         const env = JSON.parse(fs.readFileSync('.env.json') + "")
         return {
-          type: 'sqlite',
-          database: env.db_path,
+          type: 'mysql',
+          host: env.db.host,
+          port: env.db.port,
+          username: env.db.user,
+          password: env.db.secret,
+          database: env.db.name,
           entities: [User, UserSession, Message, Room],
-          synchronize: true,
+          synchronize: env.db.sync,
         };
       }
     }),

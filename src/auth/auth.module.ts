@@ -16,7 +16,7 @@ import * as fs from 'fs'
       useFactory: () => {
         const config = JSON.parse(fs.readFileSync('.env.json') + "")
         return {
-          secret: config.jwt_key,
+          secret: config.jwt.key,
           signOptions: { expiresIn: '4h' },
         }
       }

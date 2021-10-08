@@ -6,6 +6,7 @@ import { Message } from './entities/message.entity';
 import { RoomModule } from '../room/room.module';
 import { UserModule } from '../user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { PublisherModule } from '../publisher/publisher.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AuthModule } from 'src/auth/auth.module';
     forwardRef(() => AuthModule),
     forwardRef(() => RoomModule),
     forwardRef(() => UserModule),
+    forwardRef(() => PublisherModule),
   ],
   controllers: [MessageController],
   providers: [MessageService],

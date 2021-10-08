@@ -1,13 +1,13 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs'
+import { parseEnv } from 'src/common/common.config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
 
     constructor() {
-        const config = JSON.parse(fs.readFileSync('.env.json') + "")
+        const config = parseEnv()
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,

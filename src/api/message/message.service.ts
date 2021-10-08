@@ -1,6 +1,7 @@
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PublisherGateway } from '../publisher/publisher.gateway';
 import { Room } from '../room/entities/room.entity';
 import { RoomService } from '../room/room.service';
 import { User } from '../user/entities/user.entity';
@@ -15,6 +16,7 @@ export class MessageService {
     @InjectRepository(Message) private messageRepository: Repository<Message>,
     @Inject(forwardRef(() => UserService)) private readonly usersService: UserService,
     @Inject(forwardRef(() => RoomService)) private readonly roomService: RoomService,
+    @Inject(forwardRef(() => PublisherGateway)) private readonly pub: PublisherGateway,
   ) { }
 
   async findByRoom(roomId: string): Promise<Message[]> {
@@ -33,15 +35,20 @@ export class MessageService {
     if (!user) {
       throw new BadRequestException("Incorrect user");
     }
-    const rooms = await this.roomService.findByUser(user.id);
-    const messages = [];
+    const userRooms = await this.roomService.findByUser(user.id);
+    const rooms: Room[] = [];
+    const messages: Message[] = [];
 
     for (const input of data) {
-      if (!rooms.some(room => room.id == input.room)) {
+      const room = userRooms.find(room => room.id == input.room)
+      if (!room) {
         throw new BadRequestException("Incorrect Room");
       }
       if (!input.text?.length) {
         throw new BadRequestException("Incorrect input");
+      }
+      if (!rooms.includes(room)) {
+        rooms.push(room)
       }
     }
 
@@ -53,6 +60,19 @@ export class MessageService {
         messages.push(entity);
       }
     }
+
+    for (const room of rooms) {
+      const users = (
+        await this.usersService.findByRoom(room.id)
+      ).filter(user => user.id !== session.id);
+      await this.pub.sendMessage("messages", users,
+        JSON.stringify({
+          room: room.id,
+          action: "update"
+        })
+      );
+    }
+
     return messages;
   }
 }

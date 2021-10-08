@@ -7,16 +7,16 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './auth0/jwt.strategy';
 import { LocalStrategy } from './auth0/local.strategy';
 import { SessionModule } from 'src/api/session/session.module';
-import * as fs from 'fs'
+import { parseEnv } from 'src/common/common.config';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.registerAsync({
       useFactory: () => {
-        const config = JSON.parse(fs.readFileSync('.env.json') + "")
+        const env = parseEnv()
         return {
-          secret: config.jwt.key,
+          secret: env.jwt.key,
           signOptions: { expiresIn: '4h' },
         }
       }

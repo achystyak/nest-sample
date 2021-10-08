@@ -25,6 +25,14 @@ export class UserService {
     return await this.usersRepository.findOne({ email, password });
   }
 
+  async findByRoom(roomId: string): Promise<User[]> {
+    return await this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.rooms', 'room')
+      .andWhere('room.id = :id', { id: roomId })
+      .getMany();
+  }
+
   async create(input: CreateUserDto): Promise<User> {
     const user = User.create(input);
     if (!user) {

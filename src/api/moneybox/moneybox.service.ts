@@ -35,7 +35,7 @@ export class MoneyboxService {
     const moneyboxes = await this.repository
       .createQueryBuilder('moneybox')
       .leftJoin('moneybox.user', 'user')
-      .select(['moneybox', 'user'])
+      .select(['moneybox'])
       .andWhere('user.id = :oid', { oid: session.id })
       .orderBy('moneybox.createdAt', 'DESC')
       .getMany();

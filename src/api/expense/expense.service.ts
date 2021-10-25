@@ -33,7 +33,7 @@ export class ExpenseService {
       .leftJoin('expense.pocket', 'pocket')
       .leftJoin('pocket.purse', 'purse')
       .leftJoin('purse.user', 'user')
-      .select(['expense', 'pocket'])
+      .select(['expense'])
       .andWhere('pocket.id = :oid', { oid: id })
       .andWhere('user.id = :userId', { userId: session.id })
       .orderBy('expense.createdAt', 'DESC')
@@ -46,7 +46,7 @@ export class ExpenseService {
       .leftJoin('expense.envelope', 'envelope')
       .leftJoin('envelope.purse', 'purse')
       .leftJoin('purse.user', 'user')
-      .select(['expense', 'envelope'])
+      .select(['expense'])
       .andWhere('envelope.id = :oid', { oid: id })
       .andWhere('user.id = :userId', { userId: session.id })
       .orderBy('expense.createdAt', 'DESC')
@@ -58,7 +58,7 @@ export class ExpenseService {
       .createQueryBuilder('expense')
       .leftJoin('expense.purse', 'purse')
       .leftJoin('purse.user', 'user')
-      .select(['expense', 'purse'])
+      .select(['expense'])
       .andWhere('purse.id = :oid', { oid: id })
       .andWhere('user.id = :userId', { userId: session.id })
       .orderBy('expense.createdAt', 'DESC')
@@ -70,7 +70,7 @@ export class ExpenseService {
       .createQueryBuilder('expense')
       .leftJoin('expense.purse', 'purse')
       .leftJoin('purse.user', 'user')
-      .select(['expense', 'purse', 'user'])
+      .select(['expense'])
       .andWhere('user.id = :oid', { oid: id })
       .orderBy('expense.createdAt', 'DESC')
       .getMany()).map(e => new Expense(e));
@@ -101,11 +101,17 @@ export class ExpenseService {
       throw new BadRequestException("Incorrect container");
     }
 
+    if (pocket && pocket.factValue < input.value) {
+      throw new BadRequestException("Not enough funds");
+    }
+    if (envelope && envelope.factValue < input.value) {
+      throw new BadRequestException("Not enough funds");
+    }
+
     return new Expense(await this.repository.save(new Expense({
       category: input.category,
       value: input.value,
-      purse,
-      pocket
+      purse, pocket, envelope
     })));
   }
 }

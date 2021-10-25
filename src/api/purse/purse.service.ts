@@ -32,13 +32,12 @@ export class PurseService {
     const purses = await this.repository
       .createQueryBuilder('purse')
       .leftJoin('purse.user', 'user')
-      .select(['purse', 'user'])
+      .select(['purse'])
       .andWhere('user.id = :oid', { oid: session.id })
       .orderBy('purse.createdAt', 'DESC')
       .getMany();
 
     for (const purse of purses) {
-      purse.envelopes = await this.envelopeService.findByPurse(session, purse.id);
       purse.envelopes = await this.envelopeService.findByPurse(session, purse.id);
     }
     return purses.map(e => new Purse(e));

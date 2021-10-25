@@ -8,8 +8,9 @@ export class Pocket {
 
     constructor(args: Pocket) {
         Object.assign(this, args);
-        this.factValue = this.initialValue - (this.expenses?.map(expense => expense.value)?.
-            reduce((ac, val) => ac + val) ?? 0);
+        this.factValue = this.initialValue - (this.expenses?.length
+            ? this.expenses.map(expense => expense.value)?.reduce((ac, val) => ac + val)
+            : 0);
     }
 
     @PrimaryGeneratedColumn("uuid")
@@ -36,7 +37,7 @@ export class Pocket {
     @ManyToOne(() => Envelope, envelope => envelope.pockets, { nullable: true })
     envelope: Envelope;
 
-    @OneToMany(() => Expense, expense => expense.envelope, { nullable: true })
+    @OneToMany(() => Expense, expense => expense.pocket, { nullable: true })
     expenses?: Expense[];
 
     // Calculated

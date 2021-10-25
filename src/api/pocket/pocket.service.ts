@@ -27,7 +27,7 @@ export class PocketService {
   }
 
   async findByEnvelope(session: User, id: string): Promise<Pocket[]> {
-    return (await this.repository
+    const pockets = (await this.repository
       .createQueryBuilder('pocket')
       .leftJoin('pocket.expenses', 'expense')
       .leftJoin('pocket.envelope', 'envelope')
@@ -38,6 +38,8 @@ export class PocketService {
       .andWhere('user.id = :userId', { userId: session.id })
       .orderBy('pocket.createdAt', 'DESC')
       .getMany()).map(e => new Pocket(e));
+
+    return pockets;
   }
 
   async findByPurse(session: User, id: string): Promise<Pocket[]> {
@@ -47,22 +49,22 @@ export class PocketService {
       .leftJoin('pocket.envelope', 'envelope')
       .leftJoin('envelope.purse', 'purse')
       .leftJoin('purse.user', 'user')
-      .select(['pocket', 'expense', 'envelope', 'purse'])
+      .select(['pocket', 'expense'])
       .andWhere('purse.id = :oid', { oid: id })
       .andWhere('user.id = :userId', { userId: session.id })
       .orderBy('pocket.createdAt', 'DESC')
       .getMany()).map(e => new Pocket(e));
   }
 
-  async findByUser(id: string): Promise<Pocket[]> {
+  async findByUser(session: User): Promise<Pocket[]> {
     return (await this.repository
       .createQueryBuilder('pocket')
-      .leftJoin('pocket.expenses', 'expense')
       .leftJoin('pocket.envelope', 'envelope')
       .leftJoin('envelope.purse', 'purse')
       .leftJoin('purse.user', 'user')
-      .select(['pocket', 'expense', 'envelope', 'purse', 'user'])
-      .andWhere('user.id = :userId', { id })
+      .leftJoin('pocket.expenses', 'expense')
+      .select(['expense', 'pocket'])
+      .andWhere('user.id = :userId', { userId: session.id })
       .orderBy('pocket.createdAt', 'DESC')
       .getMany()).map(e => new Pocket(e));
   }
@@ -79,6 +81,7 @@ export class PocketService {
     if (!purse) {
       throw new BadRequestException("Incorrect purse");
     }
+
     const envelope = await this.envelopeService.findOne(session, input.envelope);
     if (!envelope) {
       throw new BadRequestException("Incorrect envelope");
@@ -97,11 +100,15 @@ export class PocketService {
         envelope
       });
     });
+
     if (expense > envelope.factValue) {
       throw new BadRequestException("Not enough funds");
     }
 
-    await this.envelopeService.writeOff(envelope, expense);
+    if (!(await this.envelopeService.writeOff(envelope, expense))) {
+      throw new BadRequestException("Writing off failed");
+    }
+
     return (await this.repository.save(pockets)).map(e => new Pocket(e));;
   }
 }

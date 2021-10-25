@@ -27,7 +27,7 @@ export class PocketController {
   @UseGuards(AuthGuard('jwt'))
   async findByUser(
     @RestSession() session: User) {
-    return await this.pocketService.findByUser(session.id);
+    return await this.pocketService.findByUser(session);
   }
 
   @Get('/:id/expenses')

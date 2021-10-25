@@ -2,7 +2,7 @@ import { Envelope } from 'src/api/envelope/envelope.entity';
 import { Expense } from 'src/api/expense/expense.entity';
 import { Pocket } from 'src/api/pocket/pocket.entity';
 import { User } from 'src/api/user/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('purses')
 export class Purse {
@@ -10,7 +10,7 @@ export class Purse {
     constructor(args: Purse) {
         Object.assign(this, args);
         this.factValue = this.initialValue -
-            (this.envelopes?.length ? this.envelopes?.map(e => e.factValue)?.
+            (this.envelopes?.length ? this.envelopes?.map(e => e.initialValue + e.pocketInitialValue)?.
                 reduce((ac, val) => ac + val) ?? 0 : 0);
     }
 

@@ -9,25 +9,18 @@ export class Envelope {
 
     constructor(args: Envelope) {
         Object.assign(this, args);
-        if (this.pockets?.length) {
 
-            const pocketInitial = (this.pockets.length ?
-                this.pockets.map(pocket => pocket.initialValue).
-                    reduce((ac, val) => ac + val)
-                : 0);
+        this.factValue = this.initialValue - (this.expenses?.length
+            ? this.expenses.map(expense => expense.value).reduce((ac, val) => ac + val)
+            : 0);
 
-            const pocketFact = (this.pockets.length ?
-                this.pockets.map(pocket => pocket.factValue).
-                    reduce((ac, val) => ac + val)
-                : 0);
+        this.pocketInitialValue = (this.pockets?.length
+            ? this.pockets.map(pocket => pocket.initialValue).reduce((ac, val) => ac + val)
+            : 0);
 
-            this.factValue = this.initialValue + pocketInitial - pocketFact;
-        } else {
-            this.factValue = this.initialValue - (this.expenses?.length ?
-                this.expenses.map(expense => expense.value).
-                    reduce((ac, val) => ac + val)
-                : 0);
-        }
+        this.pocketFactValue = (this.pockets?.length
+            ? this.pockets.map(pocket => pocket.factValue).reduce((ac, val) => ac + val)
+            : 0);
     }
 
     @PrimaryGeneratedColumn("uuid")
@@ -59,6 +52,12 @@ export class Envelope {
 
     @OneToMany(() => Pocket, pocket => pocket.envelope, { nullable: true })
     pockets?: Pocket[];
+
+    // Calculated
+    pocketInitialValue?: number;
+
+    // Calculated
+    pocketFactValue?: number;
 
     // Calculated
     factValue?: number;

@@ -23,8 +23,11 @@ export class EnvelopeService {
     const envelope = await this.repository
       .createQueryBuilder('envelope')
       .leftJoin('envelope.expenses', 'expense')
+      .leftJoin('envelope.purse', 'purse')
+      .leftJoin('purse.user', 'user')
       .select(['envelope', 'expense'])
-      .andWhere('purse.id = :oid', { oid: id })
+      .andWhere('envelope.id = :oid', { oid: id })
+      .andWhere('user.id = :userId', { userId: session.id })
       .getOne();
 
     if (envelope) {
@@ -39,7 +42,7 @@ export class EnvelopeService {
       .leftJoin('envelope.expenses', 'expense')
       .leftJoin('envelope.purse', 'purse')
       .leftJoin('purse.user', 'user')
-      .select(['envelope', 'purse', 'expense'])
+      .select(['envelope', 'expense'])
       .andWhere('purse.id = :oid', { oid: id })
       .andWhere('user.id = :userId', { userId: session.id })
       .orderBy('envelope.createdAt', 'DESC')
@@ -57,7 +60,7 @@ export class EnvelopeService {
       .leftJoin('envelope.expenses', 'expense')
       .leftJoin('envelope.moneybox', 'moneybox')
       .leftJoin('moneybox.user', 'user')
-      .select(['envelope', 'expense', 'moneybox'])
+      .select(['envelope', 'expense'])
       .andWhere('moneybox.id = :oid', { oid: id })
       .andWhere('user.id = :userId', { userId: session.id })
       .orderBy('envelope.createdAt', 'DESC')
@@ -76,7 +79,7 @@ export class EnvelopeService {
       .leftJoin('envelope.expenses', 'expense')
       .leftJoin('envelope.purse', 'purse')
       .leftJoin('purse.user', 'user')
-      .select(['envelope', 'purse', 'expense', 'pocket'])
+      .select(['envelope', 'expense'])
       .andWhere('user.id = :userId', { userId: session.id })
       .orderBy('envelope.createdAt', 'DESC')
       .getMany();
@@ -111,6 +114,7 @@ export class EnvelopeService {
   }
 
   async writeOff(envelope: Envelope, value: number) {
-    return await (await this.repository.update(envelope, { initialValue: envelope.initialValue - value })).affected
+    envelope.initialValue -= value;
+    return await this.repository.update(envelope.id, { initialValue: envelope.initialValue })
   }
 }

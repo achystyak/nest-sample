@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext, SetMetadata, UnauthorizedException } from '@nestjs/common';
-import { User } from 'src/api/user/entities/user.entity';
+import { User } from 'src/api/user/user.entity';
 
 export const RestSession = createParamDecorator(
     (data: unknown, context: ExecutionContext) => {

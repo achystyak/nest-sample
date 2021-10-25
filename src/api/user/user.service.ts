@@ -1,20 +1,17 @@
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { MessageService } from '../message/message.service';
-import { Room } from '../room/entities/room.entity';
-import { RoomService } from '../room/room.service';
+import { PurseService } from '../purse/purse.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { User } from './user.entity';
 
 @Injectable()
 export class UserService {
 
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
-    @Inject(forwardRef(() => MessageService)) private readonly messageService: MessageService,
-    @Inject(forwardRef(() => RoomService)) private readonly roomService: RoomService,
+    @Inject(forwardRef(() => PurseService)) private readonly purseService: PurseService,
   ) { }
 
   async findOne(id: string): Promise<User> {
@@ -29,7 +26,7 @@ export class UserService {
     return await this.usersRepository
       .createQueryBuilder('user')
       .leftJoin('user.rooms', 'room')
-      .andWhere('room.id = :id', { id: roomId })
+      .andWhere('room.id = :oid', { oid: roomId })
       .getMany();
   }
 

@@ -2,14 +2,12 @@ import { forwardRef, Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { RoomModule } from '../room/room.module';
-import { MessageModule } from '../message/message.module';
+import { User } from './user.entity';
+import { PurseModule } from '../purse/purse.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]),
-  forwardRef(() => RoomModule),
-  forwardRef(() => MessageModule)
+  forwardRef(() => PurseModule)
   ],
   controllers: [UserController],
   providers: [UserService],

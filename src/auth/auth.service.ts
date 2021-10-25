@@ -1,8 +1,8 @@
 import { ForbiddenException, forwardRef, Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/api/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/api/user/entities/user.entity';
-import { SessionService } from 'src/api/session/session.service';
+import { User } from 'src/api/user/user.entity';
+import { SessionService } from 'src/auth/session/session.service';
 // import { AbilityFactory } from './ability/ability.factory';
 
 const jwt = require('jsonwebtoken')
